@@ -48,19 +48,89 @@ class CalculatorBrain {
         learnOp(Op.UnaryOperation("cos", { cos($0) }))
     }
     
+    //fix toInfix and postfixtoinfix
+    //toInfix doesn't work (pops from stack so that it won't print?
+    
+    typealias PropertyList = AnyObject
+    
+    var program: PropertyList { //guaranteed to be a PropertyList
+        get {
+            return opStack.map { $0.description }
+        }
+        set {
+            if let opSymbols = newValue as? Array<String> {
+                var newOpStack = [Op]()
+                for opSymbol in opSymbols {
+                    if let op = knownOps[opSymbol] {
+                        newOpStack.append(op)
+                    } else if let operand = NSNumberFormatter().numberFromString(opSymbol)?.doubleValue {
+                        newOpStack.append(.Operand(operand))
+                    }
+                }
+                opStack = newOpStack
+            }
+        }
+    }
+    
+    var newStack: [Op] = []
+    
+//    func toInfix() -> String{
+//            let temp = opStack.popLast()
+//        if temp != nil {
+//            newStack.append(temp!)
+//            return "\(temp!)"
+//        } else {
+//            return "TEST"
+//        }
+//    }
+//    
+//    func postfixtoinfix(remainingOps: String) -> String{
+//        if newStack.count > 4 {
+//            print("(" + toInfix() + toInfix() + toInfix() + ")")
+//        }
+//        return ""
+//    }
+    
     func clear(clearType: String, displayStr: String) -> String {
         switch clearType {
             case "C":
             opStack = [Op]()
+            cleared = true
             return "0"
         default:
             return "Clear Button Error"
         }
     }
     
-    func history() -> Array<Op> {
-        return opStack
+    var answer = ""
+    var tempoperands = [String]()
+    var cleared = false
+    
+    func history() -> String {
+        var tempOpStack = [Op]()
+        if cleared == false {
+            tempOpStack = opStack
+        } else if cleared == true {
+            answer = ""
+            cleared = false
+        }
+        
+        while !tempOpStack.isEmpty {
+            let temp = tempOpStack.removeFirst()
+            switch temp {
+            case .UnaryOperation:
+                answer = "\(temp)" + "(" + tempoperands.removeLast() + ")"
+            case .BinaryOperation:
+                let old = tempoperands.removeLast()
+                answer = "(" + tempoperands.removeLast() + "\(temp)" + old + ")"
+            case .Operand:
+                tempoperands.append("\(temp)")
+            }
+        }
+        return "= " + answer
     }
+    
+    
     
     func pi(piType: Bool, displayStr: String) -> Double {
         switch piType {
@@ -107,23 +177,29 @@ class CalculatorBrain {
         return result
     }
     
+    var infixstring = String()
+    
+    var memorydict = [String: Op]()
+    
+    func memory(whichmem: String) -> Double? {
+        if whichmem == "M+" { //adding double to memory
+             memorydict["M"] = opStack.popLast()
+        } else if whichmem == "M" { //using the memory
+            if memorydict["M"] != nil {
+           opStack.append(memorydict["M"]!)
+            } else {
+            }
+        }
+        return evaluate()
+    }
+    
     func pushOperand(operand: Double) -> Double? {
         opStack.append(Op.Operand(operand))
         return evaluate()
     }
     
-    
-//    //Clear and delete functions go here?
-//    func pi1(display: Double) {
-//        opStack.append(M_PI)
-//        opStack.append(display)
-//    }
-//    
-//    func pi2() {
-//        opStack.append(M_PI)
-//    }
-//    
     func performOperation(symbol: String) -> Double? {
+        
         if let operation = knownOps[symbol] {
             opStack.append(operation)
         }

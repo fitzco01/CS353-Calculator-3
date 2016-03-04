@@ -24,25 +24,32 @@ class ViewController: UIViewController {
             if display.text!.containsString(".") == false {
                 display.text = display.text! + digit
             }
-        }
-        else if digit == "⌫" {
+        } else if digit == "⌫" {
             if displayValue == 0  || display.text!.characters.count == 1 {
                 displayValue = 0
             }
             else {
                 display.text = String(display.text!.characters.dropLast())
             }
-        }
-                   else if digit == "π" {
+        } else if digit == "π" {
            displayValue = brain.pi(userIsInTheMiddleOfTypingANumber, displayStr: display.text!)
            userIsInTheMiddleOfTypingANumber = false
-      }
-        else if userIsInTheMiddleOfTypingANumber {
+        } else if digit == "M" {
+            if userIsInTheMiddleOfTypingANumber {
+            } else {
+            brain.memory("M")
+            userIsInTheMiddleOfTypingANumber = false
+            }
+        } else if digit == "M+" {
+            brain.memory("M+")
+            userIsInTheMiddleOfTypingANumber = false
+        } else if userIsInTheMiddleOfTypingANumber {
             display.text = display.text! + digit
-        }  else {
+        } else {
             display.text = digit
             userIsInTheMiddleOfTypingANumber = true
         }
+     // testing  brain.postfixtoinfix(brain.toInfix())
     }
     
     @IBAction func clearButton(sender: UIButton) {
@@ -62,18 +69,13 @@ class ViewController: UIViewController {
                 displayValue = 0 //make this nil (change other stuff to optionals)
             }
         }
-        //add the history thing
-        //        if operation == "C" {
-        //            operandStack.removeAll()
-        //            displayValue = 0
-        //        }
     }
     
     @IBAction func enter() {
         userIsInTheMiddleOfTypingANumber = false
         if let result = brain.pushOperand(displayValue) {
             displayValue = result
-            history.text = "\(brain.history())"
+            history.text = brain.history()
         } else {
             displayValue = 0 //make this nil (change other stuff to optionals)
         }
