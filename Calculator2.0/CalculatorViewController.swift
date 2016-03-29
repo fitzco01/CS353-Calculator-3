@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  CalculatorViewController.swift
 //  Calculator
 //
 //  Created by Connor Fitzpatrick on 2/9/16.
@@ -8,11 +8,12 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class CalculatorViewController: UIViewController {
 
     @IBOutlet weak var display: UILabel!
 
     var brain = CalculatorBrain()
+    //var graph = GraphViewController()
     
     @IBOutlet weak var history: UILabel!
     
@@ -42,6 +43,14 @@ class ViewController: UIViewController {
             }
         } else if digit == "M+" {
             brain.memory("M+")
+            userIsInTheMiddleOfTypingANumber = false
+        } else if digit == "📉" {
+            
+            
+            //write the graph class
+            
+            
+            //graph()
             userIsInTheMiddleOfTypingANumber = false
         } else if userIsInTheMiddleOfTypingANumber {
             display.text = display.text! + digit

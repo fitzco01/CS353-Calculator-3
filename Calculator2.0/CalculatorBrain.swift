@@ -205,4 +205,25 @@ class CalculatorBrain {
         }
         return evaluate()
     }
+    
+    
+    
+    
+    
+    
+    
+    func y(x: Double) -> Double? {
+        //let x = memorydict["M"]
+        if let y = evaluate() {
+            //println("x: \(x) y: \(y)")
+            return y
+        }
+        //println("x: \(x) y: is nil")
+        return nil
+    }
+    
+    
+    
+    
+    
 }
